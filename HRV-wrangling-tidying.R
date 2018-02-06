@@ -139,11 +139,11 @@ head(recovery_df, 2) # check that variable names were assigned correctly
 
 # Amend basline data frame with mi data frame by id
 RSA_temp <- dplyr::full_join(baseline_df, mi_df,
-							by = c("id", "group", "condition"))
+			by = c("id", "group", "condition"))
 
 # Amend with recovery data frame by id
 RSA_df <- dplyr::full_join(RSA_temp, recovery_df,
-							by = c("id", "group", "condition"))
+			by = c("id", "group", "condition"))
 
 
 # Print head data frame
