@@ -64,7 +64,7 @@ get_df <- function(data_path, file_match){
         select(-1)
       
       bind_cols(meta_dat, response1, response2, response3) %>% # creates new df with pulled values 
-        set_colnames(paste0("X", 1:ncol(.)))
+        set_colnames(paste0("X", 1:ncol(.))) # names columns
     })
 }
 
