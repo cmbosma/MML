@@ -1,0 +1,80 @@
+## MINDWARE IMPEDANCE OUTPUT FUNCTION
+## -----------------------------------------------------------------------------
+
+# Excel needs to be closed while running this code. 
+# Do not edit code without contacting Colin first. 
+# Select lines of code, then press Ctrl + Enter keys to run 
+# Make sure all directories are correct and there are no typos in the file names
+
+
+## REFERENCES
+## -----------------------------------------------------------------------------
+
+# Tidyverse website 
+browseURL("http://tidyverse.org")
+
+# documentation for readxl pakage. Able to specify worksheets and columns
+browseURL("https://github.com/tidyverse/readxl")
+
+# tidyxl package documentation - import and manipulate awkward excel files
+browseURL("https://cran.r-project.org/web/packages/tidyxl/index.html")
+
+
+## LOAD PACKAGES
+## -----------------------------------------------------------------------------
+
+library(tidyverse)
+library(readxl) # make sure it is the most recent version (v1.0.0)
+library(psych) # used for 'describe' function 
+library(haven) # for exporting data frame to an SPSS data file (.sav)
+library(magrittr) # library for bind_cols() function
+
+sessionInfo() # tells you what you have loaded in your workspace
+
+## FUNCTION FOR PULLING ID, GROUP, CONDITION, SV, CO, AND PEP FROM SPREADSHEETS
+## -----------------------------------------------------------------------------
+
+get_df <- function(data_path, file_match){
+  list.files(
+    path = data_path,
+    pattern = file_match,
+    recursive = TRUE,
+    full.names = TRUE
+  ) %>%
+    map_df( ~ {
+      
+      print(.x) # This will print each file the function works on 
+      
+      temp_df <- read_excel(.x, col_names = FALSE) # temp reads files into df
+      
+      meta_dat <- temp_df %>% # pulls ID, group, and condition
+        filter(.[[1]] == "File Name") %>% 
+        select(c(3:5)
+      
+      response1 <- temp_df %>% # pulls SV values
+        filter(.[[1]] == "SV") %>% 
+        select(-1)
+      
+      response2 <- temp_df %>% # pulls CO values
+        filter(.[[1]] == "CO") %>% 
+        select(-1)
+      
+      response3 <- temp_df %>% # pulls PEP values
+        filter(.[[1]] == "PEP") %>% 
+        select(-1)
+      
+      bind_cols(meta_dat, response1, response2, response3) %>% # creates new df with pulled values 
+        set_colnames(paste0("X", 1:ncol(.)))
+    })
+}
+
+## BASELINE: LOAD EXCEL SPREADSHEETS, EXTRACT VALUES, AND CREATE DATAFRAME
+## -----------------------------------------------------------------------------
+
+# extracting values and creating dataframe using get_df() function
+baseline_df <- get_df(
+  data_path = "C:/Users/Mindware/Desktop/AAE Mindware Data", 
+  file_match = "IMPBaselineoutput.xlsx$"
+)
+
+View(baseline_df) # quick check
