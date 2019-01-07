@@ -1,16 +1,18 @@
-## MINDWARE IMPEDANCE OUTPUT FUNCTION
+## MINDWARE IMPEDANCE WRANGLING AND TIDYING SCRIPT
 ## -----------------------------------------------------------------------------
 
-# Excel needs to be closed while running this code. 
-# Do not edit code without contacting Colin first. 
-# Select lines of code, then press Ctrl + Enter keys to run 
-# Make sure all directories are correct and there are no typos in the file names
+## IMPORTANT NOTES BEFORE RUNNING THE SCRIPT
+# Excel needs to be closed while running this code.
+# Do not edit code without contacting Colin first.
+# Select all code, then press Ctrl + Enter keys to run
+# Make sure all directories are correct and there-
+# are no typos in the file names
 
 
 ## REFERENCES
 ## -----------------------------------------------------------------------------
 
-# Tidyverse website 
+# Tidyverse website
 browseURL("http://tidyverse.org")
 
 # documentation for readxl pakage. Able to specify worksheets and columns
@@ -25,7 +27,7 @@ browseURL("https://cran.r-project.org/web/packages/tidyxl/index.html")
 
 library(tidyverse)
 library(readxl) # make sure it is the most recent version (v1.0.0)
-library(psych) # used for 'describe' function 
+library(psych) # used for 'describe' function
 library(haven) # for exporting data frame to an SPSS data file (.sav)
 library(magrittr) # library for bind_cols() function
 
@@ -42,28 +44,33 @@ get_df <- function(data_path, file_match){
     full.names = TRUE
   ) %>%
     map_df( ~ {
-      
-      print(.x) # This will print each file the function works on 
-      
+
+      print(.x) # This will print each file the function works on
+
       temp_df <- read_excel(.x, col_names = FALSE) # temp reads files into df
-      
+
       meta_dat <- temp_df %>% # pulls ID, group, and condition
-        filter(.[[1]] == "File Name") %>% 
+        filter(.[[1]] == "File Name") %>%
         select(c(3:5)
-      
+
       response1 <- temp_df %>% # pulls SV values
-        filter(.[[1]] == "SV") %>% 
+        filter(.[[1]] == "SV") %>%
         select(-1)
-      
+
       response2 <- temp_df %>% # pulls CO values
-        filter(.[[1]] == "CO") %>% 
+        filter(.[[1]] == "CO") %>%
         select(-1)
-      
+
       response3 <- temp_df %>% # pulls PEP values
-        filter(.[[1]] == "PEP") %>% 
+        filter(.[[1]] == "PEP") %>%
         select(-1)
-      
-      bind_cols(meta_dat, response1, response2, response3) %>% # creates new df with pulled values 
+
+      response4 <- temp_df %>% # pulls HP values
+          filter(.[[1]] == "HP") %>%
+          select(-1)
+
+      bind_cols(meta_dat,
+         response1, response2, response3, response4) %>% # creates new df with pulled values
         set_colnames(paste0("X", 1:ncol(.))) # names columns
     })
 }
@@ -73,8 +80,12 @@ get_df <- function(data_path, file_match){
 
 # extracting values and creating dataframe using get_df() function
 baseline_df <- get_df(
-  data_path = "C:/Users/Mindware/Desktop/AAE Mindware Data", 
+  data_path = "C:/Users/Mindware/Desktop/AAE Mindware Data",
   file_match = "IMPBaselineoutput.xlsx$"
 )
 
 View(baseline_df) # quick check
+
+# Add variable names
+
+var_names <- c("id", "group", "condition", "")
