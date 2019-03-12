@@ -69,7 +69,7 @@ get_df <- function(data_path, file_match){
 
 # extracting values and creating dataframe using get_df() function
 baseline_df <- get_df(
-  data_path = "C:/Users/Mindware/Desktop/AAE Mindware Data",
+  data_path = "C:/Users/Mindware/Desktop/ERA Mindware Data",
   file_match = "Baselineoutput.xlsx$"
     )
 
@@ -93,7 +93,7 @@ head(baseline_df, 2) # check that variable names were assigned correctly
 
 # Extracting RSA values and creating a data frame
 mi_df <- get_df(
-  data_path = "C:/Users/Mindware/Desktop/AAE Mindware Data",
+  data_path = "C:/Users/Mindware/Desktop/ERA Mindware Data",
   file_match = "MIoutput.xlsx$"
     )
 
@@ -115,7 +115,7 @@ head(mi_df, 2)  # check that variable names were assigned correctly
 
 # Extracting RSA values and creating a data frame
 recovery_df <- get_df(
-  data_path = "C:/Users/Mindware/Desktop/AAE Mindware Data",
+  data_path = "C:/Users/Mindware/Desktop/ERA Mindware Data",
   file_match = "Recoveryoutput.xlsx$"
     )
 
@@ -219,7 +219,8 @@ View(RSA_df) # Review data table that is produced for issues
 getwd()
 # Set new working directory for saving .sav file
 setwd("insert-directory")
-write_sav(RSA_df, "HRVdata_date.sav")
+write_sav(ERA_RSA_df, "HRVdata_date.sav")
+wriet_csv(ERA_RSA_df, "ERA_HRV_data_date.csv")
 
 # SPSS data file should be ready to go!
 
