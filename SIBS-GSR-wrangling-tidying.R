@@ -1,8 +1,10 @@
-
-
-
-### Psychophys HRV data wrangling and tidying code for SIBS
+### Psychophys GSR data wrangling and tidying code for SIBS
 ## Colin M. Bosma
+
+## TEMP NOTES FOR COLIN: remaining things to do
+# edit variable names for inclusion and exclusion conditions
+# Add new var names to data computation section around line 186
+# test code to remove rows from pilot study: everyone before SIBS086
 
 ## NOTES FOR RESEARCH ASSISTANTS
 ## -----------------------------------------------------------------------------
@@ -30,11 +32,28 @@
 ## LOAD PACKAGES
 ## -----------------------------------------------------------------------------
 
-library(tidyverse) # This is the meta package for data wrangling
-library(readxl) # make sure it is the most recent version (v1.0.0)
-library(psych) # used for 'describe' function 
-library(haven) # for exporting data frame to an SPSS data file (.sav)
-library(magrittr) # library for bind_cols() function
+# Packages needed
+packages <- c("tidyverse",
+              "readxl",
+              "psych",
+              "haven",
+              "magrittr")
+
+# Install packages not yet installed
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages])
+}
+
+# Load packages into workspace
+invisible(lapply(packages, library, character.only = TRUE))
+
+# old way of loading packages
+#library(tidyverse) # This is the meta package for data wrangling
+#library(readxl) # make sure it is the most recent version (v1.0.0)
+#library(psych) # used for 'describe' function 
+#library(haven) # for exporting data frame to an SPSS data file (.sav)
+#library(magrittr) # library for bind_cols() function
 
 sessionInfo() # tells you what you have loaded in your workspace
 
@@ -58,11 +77,15 @@ get_df <- function(data_path, file_match){
         filter(.[[1]] == "File Name") %>% 
         select(c(3:4))
       
-      response <- temp_df %>% # pulls RSA values
-        filter(.[[1]] == "RSA") %>% 
+      response1 <- temp_df %>% # pulls RSA values
+        filter(.[[1]] == "Tonic SCL") %>% 
         select(-1)
       
-     bind_cols(meta_dat, response) %>% # creates new df with pulled values 
+      response2 <- temp_df %>% 
+        filter(.[[1]] == "Mean SC") %>%
+        select(-1)
+      
+     bind_cols(meta_dat, response1, response2) %>% # creates new df with pulled values 
        set_colnames(paste0("X", 1:ncol(.)))
   })
 }
@@ -70,56 +93,56 @@ get_df <- function(data_path, file_match){
 ## BASELINE: LOAD EXCEL SPREADSHEETS, EXTRACT VALUES, AND CREATE DATAFRAME
 ## -----------------------------------------------------------------------------
 
-# extracting values and creating dataframe using get_df() function
+# extracting EDA values and creating dataframe using get_df() function
 baseline_df <- get_df(
   data_path = "C:/Users/Mindware/Desktop/SIBS Mindware Data", 
-  file_match = "HRVBaselineoutput.xlsx$"
+  file_match = "EDABaselineoutput.xlsx$"
     )
 
 print(baseline_df) # quick check
 
 # Add variable names 
-var_names <- c("id", "group", "baseline_min1", "baseline_min2",
-				"baseline_min3", "baseline_min4", "baseline_min5",
-				"baseline_min6", "baseline_min7")
+var_names <- c("id", "condition",
+               "baseline_scl_min1", "baseline_scl_min2","baseline_scl_min3", "baseline_scl_min4", "baseline_scl_min5","baseline_scl_min6", "baseline_scl_min7",
+               "baseline_meansc_min1", "baseline_meansc_min2","baseline_meansc_min3", "baseline_meansc_min4", "baseline_meansc_min5","baseline_meansc_min6", "baseline_meansc_min7")
 			   
 colnames(baseline_df) <- var_names
 
 names(baseline_df) # check names
 
-head(baseline_df, 2) # check that variable names were assigned correctly
+head(baseline_df, 10) # check that variable names were assigned correctly
 
 View(baseline_df)
 
 
-## MI: LOAD EXCEL SPREADSHEETS, EXTRACT VALUES, AND CREATE DATAFRAME
+## INCLUSION: LOAD EXCEL SPREADSHEETS, EXTRACT VALUES, AND CREATE DATAFRAME
 ## -----------------------------------------------------------------------------
 
-# Extracting RSA values and creating a data frame
-os_df <- get_df(
+# Extracting EDA values and creating a data frame
+inclusion_df <- get_df(
   data_path = "C:/Users/Mindware/Desktop/SIBS Mindware Data", 
   file_match = "HRVOstracismoutput.xlsx$"
     )
 
-print(os_df)
+print(inclusion_df)
 
 # Add variable names 
-var_names <- c("id", "group", "os_min1", "os_min2", "os_min3",
+var_names <- c("id", "condition", "inc_min1", "inc_min2", "os_min3",
 				"os_min4")
 			   
-colnames(os_df) <- var_names
+colnames(inclusion_df) <- var_names
 
-names(os_df) # check names
+names(inclusion_df) # check names
 
-head(os_df, 2)  # check that variable names were assigned correctly
+head(inclusion_df, 10)  # check that variable names were assigned correctly
 
-View(os_df)
+View(inclusion_df)
 
-## RECOVERY: LOAD EXCEL SPREADSHEETS, EXTRACT VALUES, AND CREATE DATAFRAME
+## EXCLUSION: LOAD EXCEL SPREADSHEETS, EXTRACT VALUES, AND CREATE DATAFRAME
 ## -----------------------------------------------------------------------------
 
-# Extracting RSA values and creating a data frame
-recovery_df <- get_df(
+# Extracting EDA values and creating a data frame
+exclusion_df <- get_df(
   data_path = "C:/Users/Mindware/Desktop/SIBS Mindware Data", 
   file_match = "HRVRecoveryoutput.xlsx$"
     )
@@ -127,93 +150,74 @@ recovery_df <- get_df(
 print(recovery_df) # quick check
 
 # Add variable names 
-var_names <- c("id", "group", "recovery_min1", "recovery_min2",
+var_names <- c("id", "condition", "recovery_min1", "recovery_min2",
 				"recovery_min3", "recovery_min4", "recovery_min5",
 				"recovery_min6", "recovery_min7")
 			   
 colnames(recovery_df) <- var_names
 
-names(recovery_df) # check names
+names(exclusion_df) # check names
            
-head(recovery_df, 2) # check that variable names were assigned correctly        
+head(exclusion_df, 2) # check that variable names were assigned correctly        
 
-View(recovery_df)
+View(exclusion_df)
 
 ## COMBINE DATA FRAMES 
 ## -----------------------------------------------------------------------------
 
-# Amend basline data frame with os data frame by id
-RSA_temp <- dplyr::full_join(baseline_df, os_df,
-			by = c("id", "group"))
+# Amend basline data frame with inclusion data frame by id and condition
+EDA_temp <- dplyr::full_join(baseline_df, inclusion_df,
+			by = c("id", "condition"))
 
 # Amend with recovery data frame by id
-RSA_df <- dplyr::full_join(RSA_temp, recovery_df,
-			by = c("id", "group"))
+EDA_df <- dplyr::full_join(EDA_temp, exclusion_df,
+			by = c("id", "condition"))
 
 
 # Print head data frame
-head(RSA_df, 2) 
-dim(RSA_df) # Can cross reference # of observations and # of variables
+head(EDA_df, 2) 
+dim(EDA_df) # Can cross reference # of observations and # of variables
 
-View(RSA_df) # Take a look at the data frame
+View(EDA_df) # Take a look at the data frame
 
 ## COMPUTING NEW VARIABLES
 ## -----------------------------------------------------------------------------
 
 # Save all variable names that should be numeric to a vector
-cols_num <- c("baseline_min1", "baseline_min2", "baseline_min3", "baseline_min4",
-			  "baseline_min5", "baseline_min6", "baseline_min7",
-			  "os_min1", "os_min2", "os_min3", "os_min4",
-			  "recovery_min1", "recovery_min2", "recovery_min3",
-			  "recovery_min4", "recovery_min5", "recovery_min6",
-			  "recovery_min7")
+cols_num <- c( "baseline_scl_min1", "baseline_scl_min2","baseline_scl_min3", "baseline_scl_min4", "baseline_scl_min5","baseline_scl_min6", "baseline_scl_min7",
+               "baseline_meansc_min1", "baseline_meansc_min2","baseline_meansc_min3", "baseline_meansc_min4", "baseline_meansc_min5","baseline_meansc_min6", "baseline_meansc_min7",
+               
+               # add inclusion
+               # add exclusion
+               )
 
 # convert to numeric
-RSA_df[cols_num] <- sapply(RSA_df[cols_num], as.numeric) 
+EDA_df[cols_num] <- sapply(EDA_df[cols_num], as.numeric) 
 
-str(RSA_df) # check that RSA variables were converted to numeric
+str(EDA_df) # check that RSA variables were converted to numeric
 
-# Compute mean RSA at baseline for last 5 minutes (min5-9)
-RSA_df$baseline_meanRSA <- rowMeans(RSA_df[c("baseline_min1",
-                                              "baseline_min2",
-                                              "baseline_min3",
-                                              "baseline_min4",
-                                              "baseline_min5",
-                                              "baseline_min6",
-                                              "baseline_min7")])
-       
-# Compute mean RSA at mi for last 4 minutes (min3-7)                                       
-RSA_df$os_meanRSA <- rowMeans(RSA_df[c("os_min1",
-                                        "os_min2",
-                                        "os_min3",
-                                        "os_min4")])
+## REMOVING PILOT DATA FROM THE DATA FRAM
+## -----------------------------------------------------------------------------
 
-# Compute mean RSA at recovery for last 5 minutes (min5-9)                                       
-RSA_df$recovery_meanRSA <- rowMeans(RSA_df[c("recovery_min1",
-                                             "recovery_min2",
-                                             "recovery_min3",
-                                             "recovery_min4",
-                                             "recovery_min5",
-                                             "recovery_min6",
-                                             "recovery_min7")])
+# Note: All participants before SIBS086 are part of the pilot phase of SIBS
 
-# Let's quickly check our work
-tail(names(RSA_df), 3) # check to see if variables were created 
-head(RSA_df$baseline_meanRSA, 5) 
-head(RSA_df$os_meanRSA, 4) 
-head(RSA_df$recovery_meanRSA, 5) 
+# using dplyr
+EDA_df %>% slice(1:n) 
+
+# base r using indexing
+EDA_df <- EDA_df[-c(1:n), ] # enter number row for last row to be deleted
 
 
 ## CHECKING DATA FRAME
 ## -----------------------------------------------------------------------------
 
 # Structure and variable types
-str(RSA_df)
+str(EDA_df)
 
 
 # View the data frame 
 # IMPORTANT: Review data table that is produced for issues
-View(RSA_df) 
+View(EDA_df) 
 
 
 ## EXPORT DATA
@@ -227,15 +231,14 @@ getwd()
 setwd("C:/Users/Mindware/Desktop/SIBS Mindware Data/SIBS SPSS Data Files") 
 
 # SPSS data frame
-write_sav(RSA_df, "HRVdata_date_.sav")
+write_sav(EDA_df, "SIBS_EDA_date_.sav") # SPSS data file should be ready to go!
 
 # .csv file for excel 
-write_csv(RSA_df, "SIBS_HRV_data.csv")
-
-# SPSS data file should be ready to go!
+write_csv(EDA_df, "SIBS_EDA_data.csv") # Write .csv for using this data frame to merge with other data sets using R
 
 
-# Write .csv for using this data frame to merge with other data sets using R
+
+
 
 
 
