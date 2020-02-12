@@ -1,10 +1,6 @@
 ### Psychophys GSR data wrangling and tidying code for SIBS
 ## Colin M. Bosma
 
-## TEMP NOTES FOR COLIN: remaining things to do
-# edit variable names for inclusion and exclusion conditions
-# Add new var names to data computation section around line 186
-# test code to remove rows from pilot study: everyone before SIBS086
 
 ## NOTES FOR RESEARCH ASSISTANTS
 ## -----------------------------------------------------------------------------
@@ -121,14 +117,15 @@ View(baseline_df)
 # Extracting EDA values and creating a data frame
 inclusion_df <- get_df(
   data_path = "C:/Users/Mindware/Desktop/SIBS Mindware Data", 
-  file_match = "HRVOstracismoutput.xlsx$"
+  file_match = "EDAInclusionmoutput.xlsx$"
     )
 
 print(inclusion_df)
 
 # Add variable names 
-var_names <- c("id", "condition", "inc_min1", "inc_min2", "os_min3",
-				"os_min4")
+var_names <- c("id", "condition",
+               "inc_scl_min1", "inc_scl_min2",
+               "inc_meansc_min1", "inc_meansc_min2")
 			   
 colnames(inclusion_df) <- var_names
 
@@ -144,15 +141,15 @@ View(inclusion_df)
 # Extracting EDA values and creating a data frame
 exclusion_df <- get_df(
   data_path = "C:/Users/Mindware/Desktop/SIBS Mindware Data", 
-  file_match = "HRVRecoveryoutput.xlsx$"
+  file_match = "EDAExclusionoutput.xlsx$"
     )
 
 print(recovery_df) # quick check
 
 # Add variable names 
-var_names <- c("id", "condition", "recovery_min1", "recovery_min2",
-				"recovery_min3", "recovery_min4", "recovery_min5",
-				"recovery_min6", "recovery_min7")
+var_names <- c("id", "condition",
+               "exc_scl_min1", "exc_scl_min2", "exc_scl_min3", "exc_scl_min4", 
+               "exc_meansc_min1", "exc_meansc_min2", "exc_meansc_min3", "exc_meansc_min4")
 			   
 colnames(recovery_df) <- var_names
 
@@ -187,9 +184,11 @@ View(EDA_df) # Take a look at the data frame
 cols_num <- c( "baseline_scl_min1", "baseline_scl_min2","baseline_scl_min3", "baseline_scl_min4", "baseline_scl_min5","baseline_scl_min6", "baseline_scl_min7",
                "baseline_meansc_min1", "baseline_meansc_min2","baseline_meansc_min3", "baseline_meansc_min4", "baseline_meansc_min5","baseline_meansc_min6", "baseline_meansc_min7",
                
-               # add inclusion
-               # add exclusion
-               )
+               "inc_scl_min1", "inc_scl_min2",
+               "inc_meansc_min1", "inc_meansc_min2",
+               
+               "exc_scl_min1", "exc_scl_min2", "exc_scl_min3", "exc_scl_min4", 
+               "exc_meansc_min1", "exc_meansc_min2", "exc_meansc_min3", "exc_meansc_min4")
 
 # convert to numeric
 EDA_df[cols_num] <- sapply(EDA_df[cols_num], as.numeric) 
