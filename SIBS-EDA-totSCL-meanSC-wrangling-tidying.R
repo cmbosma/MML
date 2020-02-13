@@ -382,6 +382,10 @@ EDA_df <- dplyr::full_join(EDA_scl_df, EDA_meansc_df,
 # Let's check all of our hard work!
 View(EDA_df)
 
+# Order got screwed up with all of the joining
+EDA_df <- EDA_df %>% 
+  arrange(id)
+
 ## EXPORT DATA
 ## -----------------------------------------------------------------------------
 
