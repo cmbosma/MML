@@ -99,7 +99,7 @@ get_df <- function(data_path, file_match){
 
 # extracting EDA values and creating dataframe using get_df() function
 baseline_df <- get_df(
-  data_path = "C:/Users/Mindware/Desktop/SIBS Mindware Data - Copy",
+  data_path = "/Users/colinbosma/Desktop/SIBS APC Data 02.12.20",
   file_match = "EDABaselineoutput.xlsx$"
     )
 
@@ -125,7 +125,7 @@ View(baseline_df)
 
 # Extracting EDA values and creating a data frame
 inclusion_df <- get_df(
-  data_path = "C:/Users/Mindware/Desktop/SIBS Mindware Data - Copy",
+  data_path = "/Users/colinbosma/Desktop/SIBS APC Data 02.12.20",
   file_match = "EDAInclusionoutput.xlsx$"
     )
 
@@ -155,7 +155,7 @@ View(inclusion_df)
 
 # Extracting EDA values and creating a data frame
 exclusion_df <- get_df(
-  data_path = "C:/Users/Mindware/Desktop/SIBS Mindware Data - Copy",
+  data_path = "/Users/colinbosma/Desktop/SIBS APC Data 02.12.20",
   file_match = "EDAExclusionoutput.xlsx$"
     )
 
@@ -202,7 +202,7 @@ cols_num <- c( "baseline_scl_min1", "baseline_scl_min2","baseline_scl_min3", "ba
                "exc_scl_min1", "exc_scl_min2", "exc_scl_min3", "exc_scl_min4")
 
 # convert to numeric
-EDA_scl_df[cols_num] <- sapply(EDA_df[cols_num], as.numeric)
+EDA_scl_df[cols_num] <- sapply(EDA_scl_df[cols_num], as.numeric)
 
 str(EDA_scl_df) # check that Total SCL variables were converted to numeric
 
@@ -249,7 +249,7 @@ get_df <- function(data_path, file_match){
 
 # extracting EDA values and creating dataframe using get_df() function
 baseline_df <- get_df(
-  data_path = "C:/Users/Mindware/Desktop/SIBS Mindware Data - Copy",
+  data_path = "/Users/colinbosma/Desktop/SIBS APC Data 02.12.20",
   file_match = "EDABaselineoutput.xlsx$"
 )
 
@@ -259,7 +259,7 @@ print(baseline_df) # quick check
 var_names <- c("id",
                "baseline_meansc_min1", "baseline_meansc_min2","baseline_meansc_min3",
                "baseline_meansc_min4", "baseline_meansc_min5","baseline_meansc_min6",
-               "baseline_menasc_min7")
+               "baseline_meansc_min7")
 
 colnames(baseline_df) <- var_names
 
@@ -275,7 +275,7 @@ View(baseline_df)
 
 # Extracting EDA values and creating a data frame
 inclusion_df <- get_df(
-  data_path = "C:/Users/Mindware/Desktop/SIBS Mindware Data - Copy",
+  data_path = "/Users/colinbosma/Desktop/SIBS APC Data 02.12.20",
   file_match = "EDAInclusionoutput.xlsx$"
 )
 
@@ -305,7 +305,7 @@ View(inclusion_df)
 
 # Extracting EDA values and creating a data frame
 exclusion_df <- get_df(
-  data_path = "C:/Users/Mindware/Desktop/SIBS Mindware Data - Copy",
+  data_path = "/Users/colinbosma/Desktop/SIBS APC Data 02.12.20",
   file_match = "EDAExclusionoutput.xlsx$"
 )
 
@@ -331,7 +331,7 @@ EDA_meansc_temp <- dplyr::full_join(baseline_df, inclusion_df,
                                  by = c("id"))
 
 # Amend with recovery data frame by id
-EDA_meansc_df <- dplyr::full_join(EDA_scl_temp, exclusion_df,
+EDA_meansc_df <- dplyr::full_join(EDA_meansc_temp, exclusion_df,
                            by = c("id"))
 
 
@@ -345,14 +345,14 @@ View(EDA_meansc_df) # Take a look at the data frame
 ## -----------------------------------------------------------------------------
 
 # Save all variable names that should be numeric to a vector
-cols_num <- c( "baseline_meansc_min1", "baseline_meansc_min2","baseline_meansc_min3", "baseline_meansc_min4", "baseline_meansc_min5","baseline_meansc_min6", "baseline_meansc_min7",
+cols_num <- c("baseline_meansc_min1", "baseline_meansc_min2","baseline_meansc_min3", "baseline_meansc_min4", "baseline_meansc_min5","baseline_meansc_min6", "baseline_meansc_min7",
 
-               "inc_meansc_min1", "inc_meansc_min2",
+              "inc_meansc_min1", "inc_meansc_min2",
 
-               "exc_meansc_min1", "exc_meansc_min2", "exc_meansc_min3", "exc_meansc_min4")
+              "exc_meansc_min1", "exc_meansc_min2", "exc_meansc_min3", "exc_meansc_min4")
 
 # convert to numeric
-EDA_meansc_df[cols_num] <- sapply(EDA_df[cols_num], as.numeric)
+EDA_meansc_df[cols_num] <- sapply(EDA_meansc_df[cols_num], as.numeric)
 
 str(EDA_meansc_df) # check that RSA variables were converted to numeric
 
@@ -369,14 +369,6 @@ str(EDA_meansc_df) # check that RSA variables were converted to numeric
 #EDA_df <- EDA_df[-c(1:n), ] # enter number row for last row to be deleted
 
 
-## CHECKING DATA FRAME
-## -----------------------------------------------------------------------------
-
-# View the data frame
-# IMPORTANT: Review data table that is produced for issues
-View(EDA_df)
-
-
 ## ---------------------------------------------------------------------------##
 ##                     PART3: COMBINING BOTH AND EXPORTING                    ##
 ## ---------------------------------------------------------------------------##
@@ -387,6 +379,9 @@ View(EDA_df)
 EDA_df <- dplyr::full_join(EDA_scl_df, EDA_meansc_df,
                                  by = c("id"))
 
+# Let's check all of our hard work!
+View(EDA_df)
+
 ## EXPORT DATA
 ## -----------------------------------------------------------------------------
 
@@ -395,10 +390,12 @@ EDA_df <- dplyr::full_join(EDA_scl_df, EDA_meansc_df,
 # check current directory
 getwd()
 # Set new working directory for saving .sav file
-setwd("C:/Users/Mindware/Desktop/SIBS Mindware Data/SIBS SPSS Data Files")
+setwd("/Users/colinbosma/Desktop")
 
 # SPSS data frame
-write_sav(EDA_df, "SIBS_EDA_date.sav") # SPSS data file should be ready to go!
+write_sav(EDA_df, "SIBS_EDA_021220.sav") # SPSS data file should be ready to go!
+
+EDA_df[is.na(EDA_df)] <- " " # replace al "NA"s with a blank cell
 
 # .csv file for excel
-write_csv(EDA_df, "SIBS_EDA_data.csv") # Write .csv for using this data frame to merge with other data sets using R
+write_csv(EDA_df, "SIBS_EDA_021220.csv") # Write .csv for using this data frame to merge with other data sets using R
