@@ -74,7 +74,7 @@ get_df <- function(data_path, file_match){
       
       meta_dat <- temp_df %>% # pulls ID, group
         filter(.[[1]] == "File Name") %>% 
-        select(c(3:4))
+        select(c(3))
       
       response <- temp_df %>% # pulls RSA values
         filter(.[[1]] == "RSA") %>% 
@@ -103,7 +103,7 @@ baseline_df <- get_df(
 print(baseline_df) 
 
 # Create variable names vector
-var_names <- c("id", "group", "baseline_min1", "baseline_min2",
+var_names <- c("id", "baseline_min1", "baseline_min2",
                "baseline_min3", "baseline_min4", "baseline_min5",
                "baseline_min6", "baseline_min7")
 
@@ -118,29 +118,42 @@ head(baseline_df, 2) # check that variable names were assigned correctly
 View(baseline_df)
 
 ## STEP 4
-## MOOD INUCTION: LOAD EXCEL SPREADSHEETS, EXTRACT VALUES, AND CREATE DATA FRAME
+## MOOD INCLUSION & EXCLUSION: LOAD EXCEL SPREADSHEETS, EXTRACT VALUES, AND CREATE DATA FRAME
 ## -----------------------------------------------------------------------------
 
+# Inclusion
 # Extracting RSA values and creating a data frame
-os_df <- get_df(
+inc_df <- get_df(
   data_path = "C:/Users/Mindware/Desktop/SIBS Mindware Data", 
-  file_match = "HRVOstracismoutput.xlsx$"
+  file_match = "HRVInclusionoutput.xlsx$"
 )
 
-print(os_df)
+print(inc_df)
 
 # Add variable names 
-var_names <- c("id", "group", "os_min1", "os_min2", "os_min3",
-               "os_min4")
+var_names <- c("id", "inc_min1", "inc_min2", "inc_min3",
+               "inc_min4")
 
-colnames(os_df) <- var_names
-
-names(os_df) # check names
-
-head(os_df, 2)  # check that variable names were assigned correctly
+colnames(inc_df) <- var_names
 
 # Open up a tab with the data frame. Review it and make sure the data look correct. 
-View(os_df)
+View(inc_df)
+
+exc_df <- get_df(
+  data_path = "C:/Users/Mindware/Desktop/SIBS Mindware Data", 
+  file_match = "HRVExclusionoutput.xlsx$"
+)
+
+print(exc_df)
+
+# Add variable names 
+var_names <- c("id", "exc_min1", "exc_min2", "exc_min3",
+               "exc_min4")
+
+colnames(exc_df) <- var_names
+
+# Open up a tab with the data frame. Review it and make sure the data look correct. 
+View(inc_df)
 
 ## STEP 5
 ## RECOVERY: LOAD EXCEL SPREADSHEETS, EXTRACT VALUES, AND CREATE DATA FRAME
@@ -155,7 +168,7 @@ recovery_df <- get_df(
 print(recovery_df) # quick check
 
 # Add variable names 
-var_names <- c("id", "group", "recovery_min1", "recovery_min2",
+var_names <- c("id", "recovery_min1", "recovery_min2",
                "recovery_min3", "recovery_min4", "recovery_min5",
                "recovery_min6", "recovery_min7")
 
@@ -173,13 +186,18 @@ View(recovery_df)
 ## COMBINE DATA FRAMES 
 ## -----------------------------------------------------------------------------
 
-# Amend basline data frame with os data frame by id
-RSA_temp <- dplyr::full_join(baseline_df, os_df,
-                             by = c("id", "group"))
+# Amend basline data frame with inclusion data frame by id
+temp1 <- dplyr::full_join(baseline_df, inc_df,
+                             by = c("id"))
+
+# Amend temp1 data frame with exclusion data frame by id
+temp2 <- dplyr::full_join(temp1, exc_df,
+                          by = c("id"))
+
 
 # Amend with recovery data frame by id
-RSA_df <- dplyr::full_join(RSA_temp, recovery_df,
-                           by = c("id", "group"))
+RSA_df <- dplyr::full_join(temp2, recovery_df,
+                           by = c("id"))
 
 
 ## STEP 7
@@ -195,6 +213,8 @@ dim(RSA_df)
 
 # Structure and variable types (e.g., numeric, factor); 
 # if they are not the right type, can change in SPSS later
+# Transform data to numeric
+RSA_df[, 2:23] <- lapply(RSA_df[, 2:23], as.numeric)
 str(RSA_df)
 
 # View the data frame 
